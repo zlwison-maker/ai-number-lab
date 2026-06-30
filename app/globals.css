@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background: #f7f7f5;
+  color: #101010;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 32rem),
+    #f7f7f5;
+  color: #101010;
+  font-feature-settings: "ss01", "cv05";
+}
+
+::selection {
+  background: #101010;
+  color: #ffffff;
+}
+
+input,
+button {
+  font: inherit;
+}
+
+.number-tabular {
+  font-variant-numeric: tabular-nums;
+}
