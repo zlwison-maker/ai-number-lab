@@ -1,32 +1,42 @@
+export type PhoneMetric = {
+  label: string;
+  value: number;
+};
+
 export type PhoneAnalysis = {
   phone: string;
   maskedPhone: string;
   score: number;
+  stars: number;
   value: number;
   rarity: number;
   luck: number;
+  memory: number;
+  business: number;
+  spread: number;
   label: string;
+  oneLineAdvice: string;
   highlights: string[];
+  metrics: PhoneMetric[];
   interpretation: string;
   advice: string;
 };
 
 const labels = [
+  "高辨识度号码",
   "财富积累型",
   "事业成长型",
   "稳定可靠型",
   "社交达人型",
   "幸运体质型",
-  "数字收藏家",
-  "高辨识度型",
-  "长期主义型"
+  "数字收藏家"
 ];
 
 const positiveOpeners = [
-  "你的号码整体数字结构比较清晰",
-  "这个号码的节奏感不错",
-  "从娱乐测评角度看，这个号码有自己的记忆点",
-  "你的号码呈现出比较稳的数字气质"
+  "这个号码最大的特点不是价格，而是它比较容易被记住",
+  "从娱乐测评角度看，这个号码有一种克制但清晰的辨识度",
+  "你的号码整体数字结构比较稳定，读起来没有明显负担",
+  "这个号码的尾号承担了主要记忆点，整体观感比较自然"
 ];
 
 export function analyzePhone(rawPhone: string): PhoneAnalysis {
@@ -45,23 +55,38 @@ export function analyzePhone(rawPhone: string): PhoneAnalysis {
   const tailSame = getLongestSame(tail);
   const balance = Math.round((uniqueCount / 10) * 100);
   const luckyDigits = digits.filter((digit) => [6, 8, 9].includes(digit)).length;
+  const hasAbab = isAbab(tail);
+  const hasAabb = isAabb(tail);
+  const hasAaaa = tailSame >= 4 || /(\d)\1{3}/.test(phone);
+  const hasAaa = longestSame >= 3;
   const symmetry = getSymmetryScore(phone);
   const stableSeed = hashPhone(phone);
 
   let score = 38;
-  score += longestRun >= 3 ? 18 : longestRun === 2 ? 8 : 0;
-  score += longestSame >= 4 ? 22 : longestSame === 3 ? 15 : longestSame === 2 ? 6 : 0;
+  score += longestRun >= 4 ? 22 : longestRun === 3 ? 16 : longestRun === 2 ? 6 : 0;
+  score += hasAaaa ? 24 : hasAaa ? 16 : longestSame === 2 ? 6 : 0;
   score += tailSame >= 3 ? 16 : tailSame === 2 ? 8 : 0;
+  score += hasAbab ? 13 : 0;
+  score += hasAabb ? 12 : 0;
   score += luckyDigits * 3;
   score += balance >= 70 ? 8 : balance >= 50 ? 4 : 0;
   score += symmetry;
-  score += stableSeed % 9;
-  score = clamp(score, 40, 99);
+  score += stableSeed % 8;
+  score = clamp(score, 42, 99);
 
-  const rarity = clamp(score + (longestSame >= 3 ? 4 : 0) - Math.max(0, uniqueCount - 8), 35, 100);
-  const luck = clamp(45 + luckyDigits * 7 + (stableSeed % 23) + (tail.includes("8") ? 6 : 0), 35, 100);
-  const value = Math.round((18000 + score ** 2 * 31 + rarity * 860 + (stableSeed % 9000)) / 1000) * 1000;
+  const memory = clamp(
+    45 + longestRun * 7 + longestSame * 5 + tailSame * 6 + (hasAbab ? 12 : 0) + (hasAabb ? 10 : 0),
+    35,
+    100
+  );
+  const rarity = clamp(score + (hasAaaa ? 7 : hasAaa ? 4 : 0) - Math.max(0, uniqueCount - 8), 35, 100);
+  const luck = clamp(44 + luckyDigits * 7 + (stableSeed % 20) + (tail.includes("8") ? 6 : 0), 35, 100);
+  const business = clamp(48 + Math.round(balance / 3) + (tailSame >= 2 ? 8 : 0) + (stableSeed % 14), 35, 100);
+  const spread = clamp(Math.round(memory * 0.58 + rarity * 0.24 + luck * 0.18), 35, 100);
+  const value = Math.round((18000 + score ** 2 * 31 + rarity * 860 + memory * 420 + (stableSeed % 9000)) / 1000) * 1000;
+  const stars = clamp(Math.round(score / 20), 3, 5);
   const label = labels[(score + stableSeed) % labels.length];
+  const oneLineAdvice = buildOneLineAdvice(score, memory);
   const highlights = buildHighlights({
     phone,
     tail,
@@ -70,27 +95,43 @@ export function analyzePhone(rawPhone: string): PhoneAnalysis {
     longestSame,
     tailSame,
     luckyDigits,
-    balance
+    balance,
+    hasAbab,
+    hasAabb,
+    hasAaaa
   });
+  const metrics = [
+    { label: "记忆度", value: memory },
+    { label: "稀缺度", value: rarity },
+    { label: "幸运值", value: luck },
+    { label: "商务感", value: business },
+    { label: "传播感", value: spread }
+  ];
 
   return {
     phone,
     maskedPhone: `${phone.slice(0, 3)} ${phone.slice(3, 7)} ${phone.slice(7)}`,
     score,
+    stars,
     value,
     rarity,
     luck,
+    memory,
+    business,
+    spread,
     label,
+    oneLineAdvice,
     highlights,
+    metrics,
     interpretation: buildInterpretation({
-      phone,
       label,
       highlights,
       opener: positiveOpeners[stableSeed % positiveOpeners.length],
       balance,
-      tail
+      tail,
+      memory
     }),
-    advice: buildAdvice(score, rarity)
+    advice: buildAdvice(score)
   };
 }
 
@@ -145,6 +186,14 @@ function getLongestSame(input: string) {
   return best;
 }
 
+function isAbab(input: string) {
+  return input.length === 4 && input[0] === input[2] && input[1] === input[3] && input[0] !== input[1];
+}
+
+function isAabb(input: string) {
+  return input.length === 4 && input[0] === input[1] && input[2] === input[3] && input[0] !== input[2];
+}
+
 function getSymmetryScore(phone: string) {
   const tail = phone.slice(-4);
   const reversedTail = tail.split("").reverse().join("");
@@ -170,7 +219,10 @@ function buildHighlights({
   longestSame,
   tailSame,
   luckyDigits,
-  balance
+  balance,
+  hasAbab,
+  hasAabb,
+  hasAaaa
 }: {
   phone: string;
   tail: string;
@@ -180,18 +232,23 @@ function buildHighlights({
   tailSame: number;
   luckyDigits: number;
   balance: number;
+  hasAbab: boolean;
+  hasAabb: boolean;
+  hasAaaa: boolean;
 }) {
   const highlights: string[] = [];
 
-  if (longestRun >= 3) highlights.push("连续数字");
-  if (longestSame >= 3 || tailSame >= 2) highlights.push("尾号重复");
-  if (balance >= 60) highlights.push("数字平衡");
-  if (tailSame >= 2 || uniqueCount <= 7) highlights.push("易记忆");
-  if (longestSame >= 3 || phone.includes("888") || phone.includes("666")) {
-    highlights.push("稀有组合");
+  if (hasAaaa) highlights.push("包含 AAAA 结构，视觉记忆点更强");
+  if (longestSame >= 3 || tailSame >= 2) highlights.push("尾号重复，辨识度更高");
+  if (longestRun >= 3) highlights.push("包含连续数字，容易记忆");
+  if (hasAbab) highlights.push("尾号 ABAB 呼应，读起来更顺口");
+  if (hasAabb) highlights.push("尾号 AABB 成组，结构更清晰");
+  if (balance >= 60) highlights.push("数字分布较均衡");
+  if (tailSame >= 2 || uniqueCount <= 7 || hasAbab || hasAabb) highlights.push("结构顺口，适合长期使用");
+  if (phone.includes("888") || phone.includes("666") || luckyDigits >= 3) {
+    highlights.push("包含常见偏好数字，娱乐感更强");
   }
-  if (luckyDigits >= 3) highlights.push("高能数字");
-  if (tail[0] === tail[3] || tail[1] === tail[2]) highlights.push("尾号呼应");
+  if (tail[0] === tail[3] || tail[1] === tail[2]) highlights.push("尾号前后呼应，整体更整齐");
 
   return Array.from(new Set(highlights)).slice(0, 5);
 }
@@ -201,34 +258,43 @@ function buildInterpretation({
   highlights,
   opener,
   balance,
-  tail
+  tail,
+  memory
 }: {
-  phone: string;
   label: string;
   highlights: string[];
   opener: string;
   balance: number;
   tail: string;
+  memory: number;
 }) {
   const featureText = highlights.length
-    ? `其中「${highlights.slice(0, 3).join("」「")}」让它更容易被注意到`
-    : "没有夸张的特殊排列，反而显得自然耐看";
+    ? `尤其是「${highlights.slice(0, 2).join("」「")}」这类特征，让它更适合被记住`
+    : "它没有夸张的特殊排列，反而显得自然、低调";
   const balanceText =
     balance >= 70
-      ? "数字分布也比较均衡，读起来不容易产生负担"
-      : "尾号部分承担了主要辨识度，整体风格更偏简洁直接";
+      ? "整体数字分布也比较均衡，不会给人过于刻意的感觉"
+      : "尾号部分承担了主要辨识度，风格更偏简洁直接";
+  const memoryText = memory >= 80 ? "作为长期联系号码，它的分享和识别优势会更明显" : "作为日常联系号码，它的优势在于稳定和耐看";
 
-  return `${opener}，尾号 ${tail} 有一定辨识度，${featureText}。${balanceText}。如果把号码当作一个轻量的个人符号，它更接近「${label}」：不张扬，但有存在感，适合长期使用，也适合拿来做一张有趣的分享截图。以上只是基于数字结构生成的娱乐分析，不代表真实价值或任何未来判断。`;
+  return `${opener}。尾号 ${tail} 有一定辨识度，${featureText}。${balanceText}。从娱乐偏好来看，它更接近「${label}」，${memoryText}。这份报告只基于数字结构生成，不代表真实市场价格或交易建议。`;
 }
 
-function buildAdvice(score: number, rarity: number) {
-  if (score >= 88 || rarity >= 90) {
-    return "建议继续保留。这个号码在娱乐测评里已经有不错的识别度，没必要轻易换掉。";
+function buildOneLineAdvice(score: number, memory: number) {
+  if (score >= 88) return "继续保留";
+  if (memory >= 82) return "值得长期使用";
+  if (score >= 70) return "可以作为长期联系号码";
+  return "有升级空间";
+}
+
+function buildAdvice(score: number) {
+  if (score >= 85) {
+    return "建议继续保留。这样的号码不一定真的昂贵，但从易记程度和辨识度来看，很适合作为长期联系号码。";
   }
 
-  if (score >= 70) {
-    return "可以继续使用。如果未来遇到尾号更整齐、更好记的号码，再考虑升级也不迟。";
+  if (score >= 65) {
+    return "可以继续使用。如果未来遇到更顺口、更有记忆点的号码，也可以考虑升级。";
   }
 
-  return "保持轻松就好。号码本身够日常、够自然，如果想追求分享效果，可以优先关注尾号更有记忆点的选择。";
+  return "普通但稳定。它未必有很强的稀缺感，但胜在自然、低调，适合作为日常联系号码。";
 }
