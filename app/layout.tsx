@@ -40,6 +40,9 @@ export const metadata: Metadata = {
     title,
     description,
     images: [ogImage]
+  },
+  other: {
+    "baidu-site-verification": "codeva-4Dm0zkfpnf"
   }
 };
 
