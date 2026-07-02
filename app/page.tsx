@@ -1,8 +1,35 @@
 import { PhoneTestForm } from "@/components/PhoneTestForm";
 
+const siteUrl = "https://numberlab.vip";
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "AI Number Lab",
+    url: siteUrl,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/result?phone={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "AI Number Lab",
+    url: siteUrl,
+    logo: `${siteUrl}/icon.svg`
+  }
+];
+
 export default function Home() {
   return (
     <main className="flex min-h-screen items-center px-5 py-8 sm:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="mx-auto grid w-full max-w-5xl gap-12 lg:grid-cols-[1fr_420px] lg:items-center">
         <div className="max-w-2xl">
           <div className="mb-10 inline-flex items-center gap-2 text-sm font-medium text-neutral-500">
