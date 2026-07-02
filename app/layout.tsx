@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "AI 手机号娱乐测评｜看看你的手机号有多特别",
   description: "输入手机号，生成一份 AI 娱乐分析报告，仅供娱乐参考。",
-  metadataBase: new URL("https://ai-number-lab.vercel.app"),
+  metadataBase: new URL("https://numberlab.vip"),
   openGraph: {
     title: "AI 手机号娱乐测评",
     description: "看看你的手机号有多特别。",
