@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { phoneNumberMeaningPages } from "@/lib/programmaticSeo";
+import { seoLandingPages } from "@/lib/seoLandingPages";
 
 const siteUrl = "https://numberlab.vip";
 const lastModified = new Date();
@@ -29,6 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: "monthly" as const,
       priority: 0.72
+    })),
+    ...seoLandingPages.map((page) => ({
+      url: `${siteUrl}/${page.slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.78
     }))
   ];
 }

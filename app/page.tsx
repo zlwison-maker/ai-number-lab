@@ -24,6 +24,29 @@ const jsonLd = [
   }
 ];
 
+const featuredTopics = [
+  {
+    href: "/phone-number-fortune",
+    title: "手机号吉凶测算",
+    description: "用娱乐方式看号码结构、尾号记忆点和读法节奏。"
+  },
+  {
+    href: "/phone-number-energy",
+    title: "手机号数字能量",
+    description: "把数字能量理解为结构、记忆度和文化联想。"
+  },
+  {
+    href: "/how-to-choose-phone-number",
+    title: "手机号怎么选",
+    description: "从实用、好记、顺口和长期使用成本来判断。"
+  },
+  {
+    href: "/phone-number-meaning-guide",
+    title: "手机号数字寓意",
+    description: "轻松理解 0-9 和常见组合，不做迷信承诺。"
+  }
+];
+
 export default function Home() {
   return (
     <main className="px-5 py-8 sm:px-8">
@@ -104,6 +127,34 @@ export default function Home() {
                 数字寓意
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-5xl border-t border-neutral-200 py-14 sm:py-16">
+        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+          <div>
+            <p className="text-sm font-medium text-neutral-500">专题推荐</p>
+            <h2 className="mt-4 text-3xl font-semibold leading-tight text-neutral-950 sm:text-4xl">
+              先了解号码，再测评你的手机号。
+            </h2>
+          </div>
+
+          <div className="grid gap-px bg-neutral-200 sm:grid-cols-2">
+            {featuredTopics.map((topic) => (
+              <Link
+                key={topic.href}
+                href={topic.href}
+                className="bg-[#f7f7f5] p-5 transition hover:bg-white"
+              >
+                <h3 className="text-lg font-semibold text-neutral-950">
+                  {topic.title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-neutral-500">
+                  {topic.description}
+                </p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
