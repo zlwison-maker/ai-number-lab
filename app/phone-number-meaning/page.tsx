@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { phoneNumberMeaningPages } from "@/lib/programmaticSeo";
 
 const title = "手机号数字寓意大全：0-9 数字分别代表什么？｜AI Number Lab";
 const description =
@@ -129,6 +130,31 @@ export default function PhoneNumberMeaningPage() {
             本页内容只用于解释常见数字文化和娱乐测评语境，不代表真实价格、交易建议或未来判断。你可以把它当作一个轻松的数字阅读入口，而不是严肃结论。
           </p>
         </article>
+      </section>
+
+      <section className="mx-auto w-full max-w-4xl border-b border-neutral-200 py-10">
+        <h2 className="text-2xl font-semibold text-neutral-950">
+          热门手机号尾号寓意
+        </h2>
+        <p className="mt-4 max-w-2xl text-base leading-8 text-neutral-600">
+          下面是第一批常见搜索数字组合，每个页面都会从寓意、易记程度、娱乐指数和尾号适配度几个角度展开。
+        </p>
+        <div className="mt-6 grid gap-px bg-neutral-200 sm:grid-cols-2">
+          {phoneNumberMeaningPages.map((item) => (
+            <Link
+              key={item.slug}
+              href={`/${item.slug}`}
+              className="bg-[#f7f7f5] p-5 transition hover:bg-white"
+            >
+              <p className="number-tabular text-3xl font-semibold text-neutral-950">
+                {item.combo}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-neutral-500">
+                {item.h1}
+              </p>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="mx-auto flex w-full max-w-4xl flex-col gap-3 py-8 sm:flex-row sm:items-center">

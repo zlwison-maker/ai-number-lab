@@ -1,26 +1,34 @@
 import type { MetadataRoute } from "next";
+import { phoneNumberMeaningPages } from "@/lib/programmaticSeo";
 
 const siteUrl = "https://numberlab.vip";
+const lastModified = new Date();
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: siteUrl,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: "monthly",
       priority: 1
     },
     {
       url: `${siteUrl}/faq`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: "monthly",
       priority: 0.7
     },
     {
       url: `${siteUrl}/phone-number-meaning`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: "monthly",
       priority: 0.75
-    }
+    },
+    ...phoneNumberMeaningPages.map((page) => ({
+      url: `${siteUrl}/${page.slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.72
+    }))
   ];
 }
