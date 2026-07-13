@@ -7,6 +7,8 @@ import {
 } from "@/lib/programmaticSeo";
 import { getSeoLandingPage, seoLandingPages } from "@/lib/seoLandingPages";
 
+const siteUrl = "https://www.numberlab.vip";
+
 type PhoneNumberSeoPageProps = {
   params: Promise<{
     slug: string;
@@ -248,7 +250,7 @@ function SeoLandingPage({
     "@type": "Article",
     headline: page.h1,
     description: page.description,
-    mainEntityOfPage: `https://numberlab.vip/${page.slug}`,
+    mainEntityOfPage: `${siteUrl}/${page.slug}`,
     author: {
       "@type": "Organization",
       name: "AI Number Lab"
@@ -258,7 +260,7 @@ function SeoLandingPage({
       name: "AI Number Lab",
       logo: {
         "@type": "ImageObject",
-        url: "https://numberlab.vip/icon.svg"
+        url: `${siteUrl}/icon.svg`
       }
     }
   };

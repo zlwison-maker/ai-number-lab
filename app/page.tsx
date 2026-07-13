@@ -1,7 +1,7 @@
 import { PhoneTestForm } from "@/components/PhoneTestForm";
 import Link from "next/link";
 
-const siteUrl = "https://numberlab.vip";
+const siteUrl = "https://www.numberlab.vip";
 
 const jsonLd = [
   {

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { phoneNumberMeaningPages } from "@/lib/programmaticSeo";
 import { seoLandingPages } from "@/lib/seoLandingPages";
 
-const siteUrl = "https://numberlab.vip";
+const siteUrl = "https://www.numberlab.vip";
 const lastModified = new Date();
 
 export default function sitemap(): MetadataRoute.Sitemap {

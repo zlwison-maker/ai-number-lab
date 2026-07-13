@@ -4,7 +4,7 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { MicrosoftClarity } from "@/components/MicrosoftClarity";
 import "./globals.css";
 
-const siteUrl = "https://numberlab.vip";
+const siteUrl = "https://www.numberlab.vip";
 const title = "AI 手机号娱乐测评｜看看你的手机号有多特别";
 const description = "输入手机号，生成一份 AI 娱乐分析报告，仅供娱乐参考。";
 const ogImage = "/opengraph-image";

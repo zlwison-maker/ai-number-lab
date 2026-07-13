@@ -1,7 +1,7 @@
 const robotsTxt = `User-agent: *
 Allow: /
 
-Sitemap: https://numberlab.vip/sitemap.xml
+Sitemap: https://www.numberlab.vip/sitemap.xml
 `;
 
 export function GET() {
