@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     images: [ogImage]
   },
   other: {
-    "baidu-site-verification": "codeva-4Dm0zkfpnf"
+    "baidu-site-verification": "codeva-g5zSqwioms"
   }
 };
 
